@@ -13,7 +13,7 @@ import {
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { useMessages } from "@/lib/store/messages";
+import { Imessage, useMessages } from "@/lib/store/messages";
 import { supabaseBrowser } from "@/lib/supabase/browser";
 import { toast } from "sonner";
 
@@ -24,7 +24,8 @@ export default function EditDialog() {
   );
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleChangeMessage = async () => {
+  const handleChangeMessage = async (e: any) => {
+    e.preventDefault();
     const supabase = supabaseBrowser();
 
     const { error } = await supabase
@@ -32,10 +33,8 @@ export default function EditDialog() {
       .update({ text: inputRef.current?.value, is_edit: true })
       .eq("id", actionMessage?.id!);
 
-    console.log(actionMessage);
-
     const newMessage = {
-      ...actionMessage!,
+      ...actionMessage,
       text: inputRef.current?.value!,
       is_edit: true,
     };
@@ -43,7 +42,7 @@ export default function EditDialog() {
     if (error) {
       toast.error(error.message);
     } else {
-      optimisticUpdateMessage(newMessage);
+      optimisticUpdateMessage(newMessage as Imessage);
       toast.success("Message updated");
 
       // close the dialog

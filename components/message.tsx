@@ -10,8 +10,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
+import { useUser } from "@/lib/store/user";
 
 export default function Message({ message }: { message: Imessage }) {
+  const user = useUser((state) => state.user);
+
   return (
     <div className="flex gap-2">
       <div>
@@ -30,8 +33,13 @@ export default function Message({ message }: { message: Imessage }) {
             <h1 className="text-sm text-gray-600">
               {new Date(message.created_at).toDateString()}
             </h1>
+            {message.is_edit ? (
+              <h1 className="text-sm text-gray-600 ">(Edited)</h1>
+            ) : null}
           </div>
-          <MessageMenu message={message} />
+          {message.send_by === user?.id ? (
+            <MessageMenu message={message} />
+          ) : null}
         </div>
         <p>{message.text}</p>
       </div>
